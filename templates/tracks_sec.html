@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tracks sec</title>
+</head>
+<body>
+    <div style="margin: 32px">
+        <h1>All tracks</h1>
+
+        <table style="border: 2px solid black; border-collapse: collapse;">
+            <tr>
+                <th style="border: 1px solid black;">Singer</th>
+                <th style="border: 1px solid black;">Song</th>
+                <th style="border: 1px solid black;">Genre</th>
+                <th style="border: 1px solid black;">Time, s</th>
+            </tr>
+            {% for track in all_tracks %}
+                <tr style="border: 1px solid black;">
+                    <td style="border: 1px solid black;">{{ track.singer }}</td>
+                    <td style="border: 1px solid black;">{{ track.song }}</td>
+                    <td style="border: 1px solid black;">{{ track.genre }}</td>
+                    <td style="border: 1px solid black;">{{ track.time }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <p><a href="/">Back to home</a></p>
+    </div>
+
+</body>
+</html>
