@@ -1,4 +1,3 @@
-import os.path
 import sqlite3
 
 from faker import Faker
@@ -8,6 +7,8 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
+DATA_BASE = "data_base.db"
+
 
 @app.route("/")
 def index():
@@ -16,7 +17,7 @@ def index():
 
 @app.route("/names/")
 def names():
-    con = sqlite3.connect("first_bd.db")
+    con = sqlite3.connect(DATA_BASE)
     cur = con.cursor()
     res = cur.execute("SELECT first_name FROM customers")
     unique_names = set(res.fetchall())
@@ -30,7 +31,7 @@ def names():
 
 @app.route("/tracks/")
 def tracks():
-    con = sqlite3.connect("first_bd.db")
+    con = sqlite3.connect(DATA_BASE)
     cur = con.cursor()
     res = cur.execute("SELECT COUNT(singer) FROM tracks")
     count_tracks = res.fetchone()[0]
@@ -41,7 +42,7 @@ def tracks():
 
 @app.route("/tracks-sec/")
 def tracks_sec():
-    con = sqlite3.connect("first_bd.db")
+    con = sqlite3.connect(DATA_BASE)
     cur = con.cursor()
     res = cur.execute("SELECT singer, song, genre, time FROM tracks")
     all_raw_tracks = res.fetchall()
@@ -65,13 +66,14 @@ def tracks_sec():
 
 @app.route("/add-customers/", methods=['POST', 'GET'])
 def add_customers():
-    con = sqlite3.connect("first_bd.db")
+    con = sqlite3.connect(DATA_BASE)
     cur = con.cursor()
+    try:
+        cur.execute("SELECT * FROM customers")
+    except sqlite3.OperationalError:
+        cur.execute("CREATE TABLE customers(first_name, last_name, email)")
 
     if request.method == 'POST':
-        if not os.path.exists('first_bd.db'):
-            cur.execute("CREATE TABLE customers(first_name, last_name, email)")
-
         count = int(request.form['count'])
         fake = Faker()
         fake_customers = []
@@ -102,13 +104,14 @@ def add_customers():
 
 @app.route("/add-tracks/", methods=['POST', 'GET'])
 def add_tracks():
-    con = sqlite3.connect("first_bd.db")
+    con = sqlite3.connect(DATA_BASE)
     cur = con.cursor()
+    try:
+        cur.execute("SELECT * FROM tracks")
+    except sqlite3.OperationalError:
+        cur.execute("CREATE TABLE tracks(singer, song, genre, time)")
 
     if request.method == 'POST':
-        if not os.path.exists('first_bd.db'):
-            cur.execute("CREATE TABLE tracks(singer, song, genre, time)")
-
         count = int(request.form['count'])
         fake = Faker()
         fake.add_provider(MusicProvider)
